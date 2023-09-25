@@ -4,51 +4,59 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 
-	"github.com/boliev/protosync/src/domain"
 	"github.com/google/go-github/v55/github"
 )
 
 // Github source struct implements domain.Source
 type Github struct {
+	Name     string
+	User     string
+	Repo     string
+	Path     string
+	Branch   string
+	Tag      string
+	SyncPath string
+
+	client *github.Client
 }
 
 // NewGithub constructor
-func NewGithub() domain.Source {
-	return &Github{}
+func NewGithub(name string, user string, repo string, path string, branch string, tag string, syncPath string) *Github {
+	return &Github{
+		Name:     name,
+		User:     user,
+		Repo:     repo,
+		Path:     path,
+		Branch:   branch,
+		Tag:      tag,
+		SyncPath: syncPath,
+		client:   github.NewClient(nil),
+	}
 }
 
-// GetAllProtos returns all protos
-func (source *Github) GetAllProtos() ([]domain.Proto, error) {
-	return []domain.Proto{
-		{URL: "https://github.com/coolnotes/users/blob/main/protos/user.proto"},
-	}, nil
+// SyncProtos syncs Github proto files
+func (source *Github) SyncProtos() error {
+	return nil
 }
 
 // DownloadProto download a proto
-func (source *Github) DownloadProto(url string) (string, error) {
-	client := github.NewClient(nil)
-	// fmt.Println("\n\n")
-
-	fileContent, _, _, err := client.Repositories.GetContents(
+func (source *Github) DownloadProto(url string) error {
+	fileContent, _, _, err := source.client.Repositories.GetContents(
 		context.Background(), "coolnotes", "users", "protos/user.proto", nil,
 	)
 	if err != nil {
-		// fmt.Println(err)
-		return "", nil
+		return err
 	}
 	// fmt.Printf("File: %s\n", *fileContent.DownloadURL)
 	err = source.copyFile(*fileContent.DownloadURL, "proto/user.proto")
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-	// fmt.Printf("Directory: %#v\n", directoryContent)
-	// fmt.Printf("Response: %#v\n", resp)
 
-	return "", nil
+	return nil
 }
 
 func (source *Github) copyFile(src string, dst string) error {
@@ -68,7 +76,6 @@ func (source *Github) copyFile(src string, dst string) error {
 	if err != nil {
 		return fmt.Errorf("error while copying data: %w", err)
 	}
-	fmt.Printf("Copied %s to %s\n", src, dst)
 
 	return nil
 }

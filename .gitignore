@@ -22,3 +22,5 @@ go.work
 
 # Other
 proto
+.protosync
+.vscode
