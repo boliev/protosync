@@ -22,8 +22,6 @@ func (a *App) Run() {
 		return
 	}
 
-	log.Printf("%s", config)
-
 	sources, err := a.сreateSourcesFromConfig(config)
 	if err != nil {
 		log.Fatal(err)
@@ -44,7 +42,7 @@ func (a *App) сreateSourcesFromConfig(config *config.Config) ([]domain.Source, 
 	sources := []domain.Source{}
 	if len(config.Sources.Github) > 0 {
 		for name, cfg := range config.Sources.Github {
-			sources = append(sources, source.NewGithub(name, cfg.User, cfg.Repo, cfg.Path, cfg.Branch, cfg.Tag, cfg.SyncPath))
+			sources = append(sources, source.NewGithub(name, cfg.User, cfg.Repo, cfg.Path, cfg.Ref, cfg.SyncPath))
 		}
 	}
 

@@ -21,8 +21,7 @@ type GithubSource struct {
 	User     string `yaml:"user"`
 	Repo     string `yaml:"repo"`
 	Path     string `yaml:"path"`
-	Branch   string `yaml:"branch"`
-	Tag      string `yaml:"tag"`
+	Ref      string `yaml:"ref"`
 	SyncPath string `yaml:"syncPath"`
 }
 
